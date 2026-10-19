@@ -8,6 +8,8 @@ pipeline {
                     php -v
                     composer --version
                     composer install --no-interaction --prefer-dist --no-progress --ignore-platform-req=php
+                    cp .env.example .env
+                    php artisan key:generate
                 '''
             }
         }
@@ -23,8 +25,6 @@ pipeline {
                 sh '''
                     rsync -av --exclude='.git' $WORKSPACE/ /var/www/laravel/
                     cd /var/www/laravel
-                    cp .env.example .env
-                    php artisan key:generate
                     php artisan config:cache
                 '''
             }
