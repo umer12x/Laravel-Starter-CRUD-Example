@@ -10,6 +10,10 @@ pipeline {
                     composer install --no-interaction --prefer-dist --no-progress --ignore-platform-req=php
                     cp .env.example .env
                     php artisan key:generate
+                    
+                    # Install Node dependencies and compile frontend assets
+                    npm install
+                    npm run build
                 '''
             }
         }
@@ -23,9 +27,11 @@ pipeline {
             steps {
                 echo 'Deploying to Nginx...'
                 sh '''
-                    rsync -av --exclude='.git' $WORKSPACE/ /var/www/laravel/
+                    rsync -av --exclude='.git' --exclude='node_modules' $WORKSPACE/ /var/www/laravel/
                     cd /var/www/laravel
                     php artisan config:cache
+                    php artisan route:cache
+                    php artisan view:cache
                 '''
             }
         }
