@@ -7,7 +7,7 @@ pipeline {
                 sh '''
                     php -v
                     composer --version
-                    composer install --no-interaction --prefer-dist --no-progress
+                    composer install --no-interaction --prefer-dist --no-progress --ignore-platform-req=php
                 '''
             }
         }
