@@ -9,11 +9,14 @@ COPY . /var/www
 
 RUN composer install --no-interaction --prefer-dist --no-progress --ignore-platform-req=php
 
-# Add these two lines to generate the environment variables and key
 RUN cp .env.example .env
 RUN php artisan key:generate
 
-RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
+# Add these two lines to create the database and run migrations
+RUN touch database/database.sqlite
+RUN php artisan migrate --force
+
+RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache database/database.sqlite
 
 EXPOSE 8000
 CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
