@@ -13,7 +13,7 @@ pipeline {
                 sh '''
                     docker stop laravel-app || true
                     docker rm laravel-app || true
-                    docker run -d --name laravel-app -p 8000:9000 laravel-local:latest
+                    docker run -d --name laravel-app -p 8000:8000 laravel-local:latest
                 '''
             }
         }
