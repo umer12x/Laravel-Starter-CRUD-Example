@@ -10,5 +10,6 @@ COPY . /var/www
 RUN composer install --no-interaction --prefer-dist --no-progress --ignore-platform-req=php
 RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 
-EXPOSE 9000
-CMD ["php-fpm"]
+# Change these last two lines:
+EXPOSE 8000
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
