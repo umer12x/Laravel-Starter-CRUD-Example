@@ -1,37 +1,19 @@
 pipeline {
     agent any
     stages {
-        stage('Build') {
+        stage('Build Image') {
             steps {
-                echo 'Starting Laravel Build...'
-                sh '''
-                    php -v
-                    composer --version
-                    composer install --no-interaction --prefer-dist --no-progress --ignore-platform-req=php
-                    cp .env.example .env
-                    php artisan key:generate
-                    
-                    # Install Node dependencies and compile frontend assets
-                    npm install
-                    npm run build
-                '''
+                echo 'Building Docker container image locally...'
+                sh 'docker build -t laravel-local:latest .'
             }
         }
-        stage('Test') {
+        stage('Run Container') {
             steps {
-                echo 'Running Tests...'
-                sh 'php artisan test'
-            }
-        }
-        stage('Deploy') {
-            steps {
-                echo 'Deploying to Nginx...'
+                echo 'Deploying Laravel inside a local Docker container...'
                 sh '''
-                    rsync -av --exclude='.git' --exclude='node_modules' $WORKSPACE/ /var/www/laravel/
-                    cd /var/www/laravel
-                    php artisan config:cache
-                    php artisan route:cache
-                    php artisan view:cache
+                    docker stop laravel-app || true
+                    docker rm laravel-app || true
+                    docker run -d --name laravel-app -p 8000:9000 laravel-local:latest
                 '''
             }
         }
